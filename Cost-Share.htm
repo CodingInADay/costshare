@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>محاسبه سهم</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1e1e1e;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            background-color: #2d2d2d;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 800px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            display: inline-block;
+            margin: 0 10px;
+            color: #ffcc00;
+        }
+        .header svg {
+            width: 30px;
+            height: 30px;
+            vertical-align: middle;
+        }
+        .language-buttons {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .language-buttons button {
+            background-color: #ff6600;
+            color: #1e1e1e;
+            border: none;
+            padding: 10px 20px;
+            margin: 0 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 60px;
+        }
+        .section {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #3d3d3d;
+            border-radius: 10px;
+        }
+        .section h2 {
+            color: #ffcc00;
+            text-align: center;
+        }
+        .section button {
+            background-color: #ff6600;
+            color: #1e1e1e;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: block;
+            margin: 0 auto 10px;
+            display: inline-flex;
+            align-items: center;
+        }
+        .section button svg {
+            width: 16px;
+            height: 16px;
+            margin-left: 5px;
+        }
+        .section ul {
+            list-style-type: none;
+            padding: 0;
+            display: table;
+            width: 100%;
+        }
+        .section ul li {
+            background-color: #4d4d4d;
+            padding: 10px;
+            margin-bottom: 5px;
+            border-radius: 5px;
+            color: #fff;
+            display: table-row;
+        }
+        .section ul li span {
+            color: #ffcc00;
+            display: table-cell;
+            padding: 5px;
+        }
+        .section ul li button {
+            background: none;
+            border: none;
+            color: #ffcc00;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+        }
+        .section ul li button svg {
+            width: 16px;
+            height: 16px;
+        }
+        .total {
+            text-align: center;
+            margin-top: 20px;
+            color: #ffcc00;
+        }
+        .reset-button, .report-button {
+            background-color: #ff6600;
+            color: #1e1e1e;
+            border: none;
+            padding: 10px 20px;
+            margin: 0 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+        }
+        .reset-button svg, .report-button svg {
+            width: 16px;
+            height: 16px;
+            margin-left: 5px;
+        }
+        .reset-button:hover, .report-button:hover {
+            background-color: #cc5200;
+        }
+        .report-container {
+            background-color: #2d2d2d;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            width: 90%;
+            max-width: 800px;
+            margin: 20px auto;
+        }
+        .report-container table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .report-container th, .report-container td {
+            border: 1px solid #444;
+            padding: 8px;
+            text-align: center;
+        }
+        .report-container th {
+            background-color: #ff6600;
+            color: #1e1e1e;
+        }
+        .number {
+            font-family: monospace;
+            direction: ltr;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- هدر برنامه -->
+        <div class="header">
+            <h1 id="app-title">محاسبه سهم</h1>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                <path d="M17 5.5a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zM7 18.5a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" fill="#ffcc00"/>
+                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="#ffcc00"/>
+            </svg>
+        </div>
+
+        <!-- دکمه‌های تغییر زبان -->
+        <div class="language-buttons">
+            <button onclick="changeLanguage('fa')">Fa</button>
+            <button onclick="changeLanguage('en')">En</button>
+        </div>
+
+        <!-- بخش سهامداران -->
+        <div class="section">
+            <h2 id="add-shareholders-title">افزودن سهم داران</h2>
+            <button onclick="addShareholder()" id="add-shareholders-button">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 5v14M5 12h14"/>
+                </svg>
+                افزودن سهم داران
+            </button>
+            <ul id="shareholders-list"></ul>
+        </div>
+
+        <!-- بخش هزینه‌ها -->
+        <div class="section">
+            <h2 id="add-expenses-title">افزودن هزینه ها</h2>
+            <button onclick="addExpense()" id="add-expenses-button">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 5v14M5 12h14"/>
+                </svg>
+                افزودن هزینه ها
+            </button>
+            <ul id="expenses-list"></ul>
+            <div class="total">
+                <span id="total-expenses-label">جمع هزینه ها:</span>
+                <span id="total-expenses" class="number">0</span>
+                <span> - </span>
+                <span id="per-share-label">مبلغ هر سهم:</span>
+                <span id="per-share" class="number">0</span>
+            </div>
+        </div>
+
+        <!-- دکمه‌های بازنشانی و گزارش -->
+        <div class="section" style="text-align: center;">
+            <button class="reset-button" onclick="resetData()">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M2.5 2v6h6M21.5 22v-6h-6M22 11.5A10 10 0 0012 2v4M2 12.5A10 10 0 0012 22v-4"/>
+                </svg>
+                بازنشانی
+            </button>
+            <button class="report-button" onclick="generateReport()">
+                <svg  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                    <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/>
+                </svg>
+                گزارش
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const shareholders = [];
+        const expenses = [];
+        let language = 'fa';
+
+        const translations = {
+            fa: {
+                appTitle: 'محاسبه سهم',
+                addShareholdersTitle: 'افزودن سهم داران',
+                addShareholdersButton: 'افزودن سهم داران',
+                addExpensesTitle: 'افزودن هزینه ها',
+                addExpensesButton: 'افزودن هزینه ها',
+                totalExpensesLabel: 'جمع هزینه ها:',
+                perShareLabel: 'مبلغ هر سهم:',
+                resetButton: 'بازنشانی',
+                reportButton: 'گزارش',
+                shareholderNamePrompt: 'نام سهم دار را وارد کنید:',
+                shareholderSharesPrompt: 'تعداد سهم را وارد کنید:',
+                expenseNamePrompt: 'نام هزینه را وارد کنید:',
+                expenseAmountPrompt: 'مبلغ هزینه را وارد کنید:',
+                resetConfirmation: 'آیا مطمئن هستید که می‌خواهید همه اطلاعات را پاک کنید؟',
+                reportTitle: 'محاسبه سهم',
+                shareholdersTableTitle: 'سهم داران',
+                expensesTableTitle: 'شرح هزینه ها',
+                totalExpenses: 'جمع کل هزینه',
+                perShare: 'مبلغ هر سهم',
+                shareholderName: 'نام سهم دار',
+                shareholderShares: 'تعداد سهم',
+                totalShare: 'جمع سهم',
+                edit: 'ویرایش',
+                row: 'ردیف',
+                expenseName: 'نام هزینه',
+                amount: 'مبلغ'
+            },
+            en: {
+                appTitle: 'Share Calculation',
+                addShareholdersTitle: 'Add Shareholders',
+                addShareholdersButton: 'Add Shareholder',
+                addExpensesTitle: 'Add Expenses',
+                addExpensesButton: 'Add Expense',
+                totalExpensesLabel: 'Total Expenses:',
+                perShareLabel: 'Per Share:',
+                resetButton: 'Reset',
+                reportButton: 'Report',
+                shareholderNamePrompt: 'Enter shareholder name:',
+                shareholderSharesPrompt: 'Enter number of shares:',
+                expenseNamePrompt: 'Enter expense name:',
+                expenseAmountPrompt: 'Enter expense amount:',
+                resetConfirmation: 'Are you sure you want to reset all data?',
+                reportTitle: 'Share Calculation',
+                shareholdersTableTitle: 'Shareholders',
+                expensesTableTitle: 'Expenses Details',
+                totalExpenses: 'Total Expenses',
+                perShare: 'Per Share',
+                shareholderName: 'Shareholder Name',
+                shareholderShares: 'Number of Shares',
+                totalShare: 'Total Share',
+                edit: 'Edit',
+                row: 'Row',
+                expenseName: 'Expense Name',
+                amount: 'Amount'
+            }
+        };
+
+        function changeLanguage(lang) {
+            language = lang;
+            document.documentElement.dir = lang === 'fa' ? 'rtl' : 'ltr';
+            updateUI();
+        }
+
+        function updateUI() {
+            document.getElementById('app-title').textContent = translations[language].appTitle;
+            document.getElementById('add-shareholders-title').textContent = translations[language].addShareholdersTitle;
+            document.getElementById('add-shareholders-button').textContent = translations[language].addShareholdersButton;
+            document.getElementById('add-expenses-title').textContent = translations[language].addExpensesTitle;
+            document.getElementById('add-expenses-button').textContent = translations[language].addExpensesButton;
+            document.getElementById('total-expenses-label').textContent = translations[language].totalExpensesLabel;
+            document.getElementById('per-share-label').textContent = translations[language].perShareLabel;
+            document.querySelector('.reset-button').textContent = translations[language].resetButton;
+            document.querySelector('.report-button').textContent = translations[language].reportButton;
+            updateShareholdersList();
+            updateExpensesList();
+        }
+
+        function addShareholder() {
+            const name = prompt(translations[language].shareholderNamePrompt);
+            if (name) {
+                const shares = parseInt(prompt(translations[language].shareholderSharesPrompt));
+                if (!isNaN(shares)) {
+                    shareholders.push({ name, shares });
+                    saveData();
+                    updateShareholdersList();
+                    calculateShares();
+                }
+            }
+        }
+
+        function addExpense() {
+            const name = prompt(translations[language].expenseNamePrompt);
+            if (name) {
+                const amount = parseFloat(prompt(translations[language].expenseAmountPrompt));
+                if (!isNaN(amount)) {
+                    expenses.push({ name, amount });
+                    saveData();
+                    updateExpensesList();
+                    calculateShares();
+                }
+            }
+        }
+
+        function updateShareholdersList() {
+            const list = document.getElementById('shareholders-list');
+            list.innerHTML = `
+                <li style="font-weight: bold;">
+                    <span>${translations[language].row}</span>
+                    <span>${translations[language].shareholderName}</span>
+                    <span>${translations[language].shareholderShares}</span>
+                    <span>${translations[language].totalShare}</span>
+                    <span>${translations[language].edit}</span>
+                </li>
+            `;
+            shareholders.forEach((shareholder, index) => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <span>${index + 1}</span>
+                    <span>${shareholder.name}</span>
+                    <span class="number">${shareholder.shares.toLocaleString()}</span>
+                    <span class="number">${(shareholder.shares * (perShare || 0)).toLocaleString(undefined, { maximumFractionDigits: 2 })}</span>
+                    <button onclick="editShareholder(${index})">
+                        <svg  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M17 3a2.828 2.828 0 114 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>
+                        </svg>
+                    </button>
+                `;
+                list.appendChild(li);
+            });
+        }
+
+        function updateExpensesList() {
+            const list = document.getElementById('expenses-list');
+            list.innerHTML = `
+                <li style="font-weight: bold;">
+                    <span>${translations[language].row}</span>
+                    <span>${translations[language].expenseName}</span>
+                    <span>${translations[language].amount}</span>
+                    <span>${translations[language].edit}</span>
+                </li>
+            `;
+            expenses.forEach((expense, index) => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <span>${index + 1}</span>
+                    <span>${expense.name}</span>
+                    <span class="number">${expense.amount.toLocaleString(undefined, { maximumFractionDigits: 2 })}</span>
+                    <button onclick="editExpense(${index})">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M17 3a2.828 2.828 0 114 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>
+                        </svg>
+                    </button>
+                `;
+                list.appendChild(li);
+            });
+            const total = expenses.reduce((sum, expense) => sum + expense.amount, 0);
+            document.getElementById('total-expenses').textContent = total.toLocaleString(undefined, { maximumFractionDigits: 2 });
+        }
+
+        let perShare = 0;
+
+        function calculateShares() {
+            const totalExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0);
+            const totalShares = shareholders.reduce((sum, shareholder) => sum + shareholder.shares, 0);
+            perShare = totalExpenses / totalShares;
+            document.getElementById('per-share').textContent = perShare.toLocaleString(undefined, { maximumFractionDigits: 2 });
+            updateShareholdersList();
+        }
+
+        function editShareholder(index) {
+            const name = prompt(translations[language].shareholderNamePrompt, shareholders[index].name);
+            if (name) {
+                const shares = parseInt(prompt(translations[language].shareholderSharesPrompt, shareholders[index].shares));
+                if (!isNaN(shares)) {
+                    shareholders[index] = { name, shares };
+                    saveData();
+                    updateShareholdersList();
+                    calculateShares();
+                }
+            }
+        }
+
+        function editExpense(index) {
+            const name = prompt(translations[language].expenseNamePrompt, expenses[index].name);
+            if (name) {
+                const amount = parseFloat(prompt(translations[language].expenseAmountPrompt, expenses[index].amount));
+                if (!isNaN(amount)) {
+                    expenses[index] = { name, amount };
+                    saveData();
+                    updateExpensesList();
+                    calculateShares();
+                }
+            }
+        }
+
+        function resetData() {
+            if (confirm(translations[language].resetConfirmation)) {
+                shareholders.length = 0;
+                expenses.length = 0;
+                saveData();
+                updateShareholdersList();
+                updateExpensesList();
+                calculateShares();
+            }
+        }
+
+        function generateReport() {
+            const reportWindow = window.open('', '_blank');
+            reportWindow.document.write(`
+                <html dir="${language === 'fa' ? 'rtl' : 'ltr'}">
+                <head>
+                    <title>${translations[language].reportTitle}</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; background-color: #1e1e1e; color: #fff; padding: 20px; }
+                        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+                        th, td { border: 1px solid #444; padding: 8px; text-align: center; }
+                        th { background-color: #ff6600; color: #1e1e1e; }
+                        h1, h2 { color: #ffcc00; text-align: center; }
+                    </style>
+                </head>
+                <body>
+                    <h1>${translations[language].reportTitle}</h1>
+                    <h2>سهم داران</h2>
+                    <table>
+                        <tr>
+                            <th>ردیف</th>
+                            <th>نام سهم دار</th>
+                            <th>تعداد سهم</th>
+                            <th>جمع سهم</th>
+                        </tr>
+                        ${shareholders.map((shareholder, index) => `
+                            <tr>
+                                <td>${index + 1}</td>
+                                <td>${shareholder.name}</td>
+                                <td>${shareholder.shares}</td>
+                                <td>${(shareholder.shares * perShare).toLocaleString()}</td>
+                            </tr>
+                        `).join('')}
+                    </table>
+                    <h2>${translations[language].expensesTableTitle}</h2>
+                    <table>
+                        <tr>
+                            <th>ردیف</th>
+                            <th>نام هزینه</th>
+                            <th>مبلغ</th>
+                        </tr>
+                        ${expenses.map((expense, index) => `
+                            <tr>
+                                <td>${index + 1}</td>
+                                <td>${expense.name}</td>
+                                <td>${expense.amount.toLocaleString()}</td>
+                            </tr>
+                        `).join('')}
+                        <tr>
+                            <td colspan="2">${translations[language].totalExpenses}</td>
+                            <td>${expenses.reduce((sum, expense) => sum + expense.amount, 0).toLocaleString()}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">${translations[language].perShare}</td>
+                            <td>${perShare.toLocaleString()  }</td>
+                        </tr>
+                    </table>
+                </body>
+                </html>
+            `);
+            reportWindow.document.close();
+        }
+
+        function saveData() {
+            localStorage.setItem('shareholders', JSON.stringify(shareholders));
+            localStorage.setItem('expenses', JSON.stringify(expenses));
+        }
+
+        function loadData() {
+            const savedShareholders = localStorage.getItem('shareholders');
+            const savedExpenses = localStorage.getItem('expenses');
+            if (savedShareholders) {
+                shareholders.push(...JSON.parse(savedShareholders));
+            }
+            if (savedExpenses) {
+                expenses.push(...JSON.parse(savedExpenses));
+            }
+            updateShareholdersList();
+            updateExpensesList();
+            calculateShares();
+        }
+
+        window.onload = function() {
+            loadData();
+            updateUI();
+        };
+    </script>
+</body>
+</html>
